@@ -1,18 +1,22 @@
 from flask import Flask, request, jsonify, render_template
 import pymysql
 import os
+from dotenv import load_dotenv
 from datetime import datetime
 import random
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
 # Function to establish a MySQL database connection
 def get_db_connection():
     connection = pymysql.connect(
-        host='sietnilokheri.mysql.pythonanywhere-services.com',  # Your MySQL host
-        user='sietnilokheri',  # Your MySQL username
-        password=os.getenv('DB_PASSWORD', 'your_mysql_password'),  # Set the password in environment variables
-        db='sietnilokheri$beast',  # Your MySQL database name
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        db=os.getenv('DB_NAME'),
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
