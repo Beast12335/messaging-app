@@ -22,21 +22,6 @@ def get_db_connection():
     )
     return connection
 
-# Function to initialize the database (create the table if it doesn't exist)
-def init_db():
-    connection = get_db_connection()
-    with connection.cursor() as cursor:
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS messages (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100),
-                message TEXT,
-                image_url VARCHAR(255),
-                timestamp DATETIME
-            )
-        ''')
-    connection.commit()
-    connection.close()
 
 # List of random names to assign to posts
 names = [
@@ -78,5 +63,5 @@ def submit_message():
 
 # Initialize the database when the app starts
 if __name__ == '__main__':
-    init_db()  # Ensure the database is initialized
+   # init_db()  # Ensure the database is initialized
     app.run(debug=True)
