@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anonymous Messages</title>
+    <script>
+        // This function clears the form after submission
+        function clearForm() {
+            document.getElementById('messageForm').reset();
+        }
+    </script>
 </head>
 <body>
     <h1>Post Your Anonymous Message</h1>
+
     <!-- Form to submit a new message -->
-    <form action="/submit" method="POST" enctype="multipart/form-data">
+    <form id="messageForm" action="/submit" method="POST" enctype="multipart/form-data" onsubmit="clearForm()">
         <textarea name="message" rows="4" cols="50" placeholder="Enter your message..." required></textarea><br><br>
         <input type="file" name="image"><br><br>
         <input type="submit" value="Post Message">
