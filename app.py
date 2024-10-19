@@ -18,7 +18,7 @@ def get_db_connection():
     connection = pymysql.connect(
         host='sietnilokheri.mysql.pythonanywhere-services.com',
         user=os.getenv('DB_USER'),  # Ensure DB_USER is set in your .env file
-        password=os.getenv('DB_PASS'),  # Ensure DB_PASS is set in your .env file
+        password='014beast',  # Ensure DB_PASS is set in your .env file
         db='sietnilokheri$beast',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
