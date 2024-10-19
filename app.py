@@ -14,9 +14,9 @@ app = Flask(__name__)
 def get_db_connection():
     connection = pymysql.connect(
         host='sietnilokheri.mysql.pythonanywhere-services.com',
-        user='sietnilokheri',
-        password= '014beast',
-        db='sietnilokheri$beast',
+        user='sietnilokheri',  # Ensure you use environment variables here
+        password='014beast',
+        db=os.getenv('DB_NAME'),
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -78,5 +78,5 @@ def submit_message():
 
 # Initialize the database when the app starts
 if __name__ == '__main__':
-    init_db()
+    init_db()  # Ensure the database is initialized
     app.run(debug=True)
