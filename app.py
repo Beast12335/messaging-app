@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, url_for
+from flask import Flask, request, render_template, redirect, url_for
 import pymysql
 import os
 from dotenv import load_dotenv
@@ -14,7 +14,7 @@ app = Flask(__name__)
 def get_db_connection():
     connection = pymysql.connect(
         host='sietnilokheri.mysql.pythonanywhere-services.com',
-        user=os.getenv('DB_USER'),  # Make sure the environment variable is set
+        user=os.getenv('DB_USER'),
         password='014beast',  # Replace with your password or env variable
         db='sietnilokheri$beast',
         charset='utf8mb4',
@@ -74,15 +74,11 @@ def submit_message():
         connection.commit()
         connection.close()
 
-        return jsonify({'status': 'Message posted successfully!'})
+        # Redirect back to the homepage to display the new message
+        return redirect(url_for('index'))
 
-    except KeyError as e:
-        # Handles missing form data
-        return jsonify({'error': f"Missing form data: {e}"}), 400
-    
     except Exception as e:
-        # General error handling for other issues
-        return jsonify({'error': str(e)}), 500
+        return str(e)
 
 # Initialize the database when the app starts
 if __name__ == '__main__':
