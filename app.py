@@ -14,8 +14,8 @@ app = Flask(__name__)
 def get_db_connection():
     connection = pymysql.connect(
         host='sietnilokheri.mysql.pythonanywhere-services.com',
-        user='sietnilokheri',  # Ensure you use environment variables here
-        password='014beast',
+        user=os.getenv('DB_USER'),  # Ensure you use environment variables here
+        password=os.getenv('DB_PASSWORD'),
         db='sietnilokheri$beast',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
