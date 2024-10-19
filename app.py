@@ -1,85 +1,86 @@
-from flask import Flask, request, render_template, redirect, url_for
-import pymysql
+from flask import Flask, render_template, request, redirect, url_for
 import os
+import random
+import pymysql
+from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime
-import random
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'static/images'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
-# Function to establish a MySQL database connection
+# Database connection function
 def get_db_connection():
     connection = pymysql.connect(
         host='sietnilokheri.mysql.pythonanywhere-services.com',
-        user=os.getenv('DB_USER'),
-        password='014beast',  # Replace with your password or env variable
+        user=os.getenv('DB_USER'),  # Ensure DB_USER is set in your .env file
+        password=os.getenv('DB_PASS'),  # Ensure DB_PASS is set in your .env file
         db='sietnilokheri$beast',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
     return connection
 
-# List of random names to assign to posts
-names = [
-    "Mysterious Falcon", "Silent Owl", "Shadow Panther", "Lone Wolf",
-    "Crimson Phoenix", "Golden Eagle", "Iron Tiger", "Blue Dragon",
-    "Night Hawk", "Stealth Fox", "Emerald Serpent", "Fire Lion", 
-    "Black Stallion", "White Wolf", "Scarlet Raven", "Ghost Cat",
-    "Fierce Leopard", "Thunder Bear", "Wind Dancer", "Storm Crow",
-    "Dusk Rider", "Silver Shark", "Steel Cobra", "Bronze Raven", 
-    "Swift Eagle"
-]
+# Check if the uploaded file is allowed
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-# Route to display messages and form for new message submission
-@app.route('/')
+# Function to generate a random name for each post
+def get_random_name():
+    names = [
+        "Cool Panda", "Happy Turtle", "Red Fox", "Smart Rabbit", "Curious Cat", 
+        "Mysterious Falcon", "Silent Owl", "Shadow Panther", "Lone Wolf"
+    ]
+    return random.choice(names)
+
+# Route for homepage and message submission
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    connection = get_db_connection()
-    with connection.cursor() as cursor:
-        cursor.execute('SELECT * FROM messages ORDER BY timestamp DESC')
-        messages = cursor.fetchall()
-    connection.close()
-    return render_template('index.html', messages=messages)
-
-# Route to handle message submission
-@app.route('/submit', methods=['POST'])
-def submit_message():
-    try:
-        # Get the message from the form
+    if request.method == 'POST':
         message = request.form['message']
-        
-        # Handle file upload (optional)
-        image = request.files['image'] if 'image' in request.files else None
-        image_url = None
-        
-        if image and image.filename != '':
-            # Ensure the 'static/images/' directory exists
-            image_path = os.path.join('static/images', image.filename)
-            image.save(image_path)
-            image_url = image.filename
-        
-        # Choose a random name
-        name = random.choice(names)
+        name = get_random_name()
         timestamp = datetime.now()
 
-        # Insert the message into the database
+        # Check for image upload
+        if 'image' not in request.files:
+            image_filename = None
+        else:
+            image = request.files['image']
+            if image and allowed_file(image.filename):
+                image_filename = secure_filename(image.filename)
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+            else:
+                image_filename = None
+
+        # Insert the message into the MySQL database
         connection = get_db_connection()
         with connection.cursor() as cursor:
-            cursor.execute(
-                'INSERT INTO messages (name, message, image_url, timestamp) VALUES (%s, %s, %s, %s)',
-                (name, message, image_url, timestamp)
-            )
+            cursor.execute('''
+                INSERT INTO messages (name, message, image_url, timestamp) 
+                VALUES (%s, %s, %s, %s)
+            ''', (name, message, image_filename, timestamp))
         connection.commit()
         connection.close()
 
-        # Redirect back to the homepage to display the new message
+        # Redirect back to the homepage after message submission
         return redirect(url_for('index'))
 
-    except Exception as e:
-        return str(e)
+    # Retrieve all messages from the MySQL database
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT name, message, image_url, timestamp FROM messages ORDER BY timestamp DESC')
+        messages = cursor.fetchall()
+    connection.close()
 
-# Initialize the database when the app starts
+    # Render the template with the messages
+    return render_template('index.html', messages=messages)
+
+
 if __name__ == '__main__':
+    # Ensure the database is initialized (you can comment this out if not needed anymore)
+    #init_db()
     app.run(debug=True)
