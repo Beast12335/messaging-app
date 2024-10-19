@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anonymous Messages</title>
-    <script>
-        // This function clears the form after submission
-        function clearForm() {
-            document.getElementById('messageForm').reset();
-        }
-    </script>
+    <title>Anonymous Messaging</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Post Your Anonymous Message</h1>
+    <div class="container mt-5">
+        <h1>Post Your Message Anonymously</h1>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <textarea class="form-control" name="message" rows="3" placeholder="Enter your message" required></textarea>
+            </div>
+            <div class="mb-3">
+                <input type="file" class="form-control" name="image">
+            </div>
+            <button type="submit" class="btn btn-primary">Post Message</button>
+        </form>
 
-    <!-- Form to submit a new message -->
-    <form id="messageForm" action="/submit" method="POST" enctype="multipart/form-data" onsubmit="clearForm()">
-        <textarea name="message" rows="4" cols="50" placeholder="Enter your message..." required></textarea><br><br>
-        <input type="file" name="image"><br><br>
-        <input type="submit" value="Post Message">
-    </form>
+        <hr>
 
-    <h2>Previous Messages</h2>
-    <ul>
-    <!-- Loop through the messages and display them -->
-    {% for message in messages %}
-        <li>
-            <strong>{{ message['name'] }}:</strong> {{ message['message'] }}<br>
-            {% if message['image_url'] %}
-                <img src="{{ url_for('static', filename='images/' + message['image_url']) }}" width="200px"><br>
-            {% endif %}
-        </li><br>
-    {% endfor %}
-    </ul>
+        <h2>Past Messages</h2>
+        <ul class="list-group">
+            {% for message in messages %}
+            <li class="list-group-item">
+                <strong>{{ message['name'] }}</strong>: {{ message['message'] }} <br>
+                <small><em>{{ message['timestamp'] }}</em></small>
+                {% if message['image_url'] %}
+                <br><img src="{{ url_for('static', filename='images/' + message['image_url']) }}" width="150">
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
