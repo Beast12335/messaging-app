@@ -13,9 +13,9 @@ app = Flask(__name__)
 # Function to establish a MySQL database connection
 def get_db_connection():
     connection = pymysql.connect(
-        host=os.getenv('DB_HOST'),
+        host='sietnilokheri.mysql.pythonanywhere-services.com',
         user=os.getenv('DB_USER'),
-        password= '',
+        password= os.getenv('DB_PASSWORD'),
         db=os.getenv('DB_NAME'),
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
