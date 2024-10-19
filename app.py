@@ -16,7 +16,7 @@ def get_db_connection():
         host='sietnilokheri.mysql.pythonanywhere-services.com',
         user='sietnilokheri',  # Ensure you use environment variables here
         password='014beast',
-        db=os.getenv('DB_NAME'),
+        db='sietnilokheri$beast',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
